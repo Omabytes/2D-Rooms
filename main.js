@@ -27,39 +27,10 @@ let roomHeight = 100
 let roomWidth = 100
 
 
-// for (let i = 0; i < NUM_OF_ROOMS; i++) {
-
-//     if (rooms.length === 0) {
-//         const room = createRoomObject(roomCoords, null)
-//         rooms.push(room)
-//         roomsWithAvailableConnections.push(room)
-//         drawRoom(room.topLeftCorner, room.bottomRightCorner)
-
-//     } else {
-//         if (roomsWithAvailableConnections.length === 0) throw "There are no rooms with available connections"
-
-//         const {item: connectingRoom, index: connectingRoomIndex} = getRandomItemInList(roomsWithAvailableConnections)
-//         const {item: connectionToUse} = getRandomItemInList(getAvailableConnections(connectingRoom))
-
-//         //todo: connect.
-//         roomCoords = setRoomCoords(connectingRoom, connectionToUse)
-//         const room = createRoomObject(roomCoords, connectingRoom)
-
-//         rooms.push(room)
-//         if (roomHasConnectionAvailable(room)) roomsWithAvailableConnections.push(room)
-//         removeConnectingRoomFromListIfNoMoreConnections(connectingRoom)
-//         if (rooms.length > 1 && !roomHasConnectionAvailable(roomsWithAvailableConnections[connectingRoomIndex])) roomsWithAvailableConnections.splice(connectingRoomIndex, 1)
-//         drawRoom(room.topLeftCorner, room.bottomRightCorner)
-//         drawConnector(room.topLeftCorner, room.bottomRightCorner, connectionToUse)
-
-//     }
-// }
-
 let iterations = 0
-const generateRooms = setInterval(tick, 500)
+const generateRooms = setInterval(generateRoom, 500)
 
-
-function tick() {
+function generateRoom() {
     if (rooms.length === 0) {
         const room = createRoomObject(roomCoords, null)
         rooms.push(room)
@@ -68,15 +39,18 @@ function tick() {
 
     } else {
         if (roomsWithAvailableConnections.length === 0) throw "There are no rooms with available connections"
-        //todo: Check for room collisions. Allow weighting of choice towards rooms with greater/fewer connections available to give control of sparsity. Randomly connect adjacent rooms.
+        //todo: Randomly connect adjacent rooms.
 
         const {item: connectingRoom, index: connectingRoomIndex} = getRandomItemInList(roomsWithAvailableConnections)
+        //todo: Allow weighting of choice towards rooms with greater/fewer connections available to give control of sparsity.
         const {item: connectionToUse} = getRandomItemInList(getAvailableConnections(connectingRoom))
 
         roomCoords = setRoomCoords(connectingRoom, connectionToUse)
         const room = createRoomObject(roomCoords, connectingRoom)
-        setConnectionIDs(room, connectingRoom, connectionToUse)
+        //todo: Check for room collisions.
+        if(isCollision(room)) return        
 
+        setConnectionIDs(room, connectingRoom, connectionToUse)
         rooms.push(room)
         if (roomHasConnectionAvailable(room)) roomsWithAvailableConnections.push(room)
         removeConnectingRoomFromListIfNoMoreConnections(connectingRoom)
@@ -166,6 +140,19 @@ function createRoomObject(coords, connectingRoom) {
         }
         
     }
+}
+
+function isCollision(nr) {
+    for(const r of roomsWithAvailableConnections) {
+        if (((nr.topLeftCorner.x < r.bottomRightCorner.x)
+                && (r.topLeftCorner.x < nr.bottomRightCorner.x))
+            && ((nr.topLeftCorner.y < r.bottomRightCorner.y)
+                && (r.topLeftCorner.y < nr.bottomRightCorner.y))            
+        ) {
+            return true
+        }
+    }
+    return false
 }
 
 function setConnectionIDs(newRoom, connectingRoom, connectionToUse) {
