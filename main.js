@@ -14,11 +14,13 @@ const STARTING_ROOM_COORDS = {
         y: 300
     },
     bottomRightCorner: {
-        x: 700,
-        y: 400
+        x: 650,
+        y: 350
     }
 }
-const ROOM_SEPARATION_DISTANCE = 20
+const ROOM_SEPARATION_DISTANCE = 15
+const MIN_ROOM_DIMENSION = 30
+const MAX_ROOM_DIMENSION = 150
 
 const rooms = []
 const roomsWithAvailableConnections = []
@@ -185,7 +187,7 @@ function setRoomCoords(connectingRoom, connectionToUse) {
             coords = {
                 topLeftCorner: {
                     x: connectingRoom.topLeftCorner.x,
-                    y: connectingRoom.topLeftCorner.y - ROOM_SEPARATION_DISTANCE - roomHeight
+                    y: connectingRoom.topLeftCorner.y - ROOM_SEPARATION_DISTANCE - randomRoomSize()
                 },
                 bottomRightCorner: {
                     x: connectingRoom.bottomRightCorner.x,
@@ -200,7 +202,7 @@ function setRoomCoords(connectingRoom, connectionToUse) {
                     y: connectingRoom.topLeftCorner.y
                 },
                 bottomRightCorner: {
-                    x: connectingRoom.bottomRightCorner.x + ROOM_SEPARATION_DISTANCE + roomWidth,
+                    x: connectingRoom.bottomRightCorner.x + ROOM_SEPARATION_DISTANCE + randomRoomSize(),
                     y: connectingRoom.bottomRightCorner.y
                 }
             }
@@ -213,14 +215,14 @@ function setRoomCoords(connectingRoom, connectionToUse) {
                 },
                 bottomRightCorner: {
                     x: connectingRoom.bottomRightCorner.x,
-                    y: connectingRoom.bottomRightCorner.y + ROOM_SEPARATION_DISTANCE + roomHeight
+                    y: connectingRoom.bottomRightCorner.y + ROOM_SEPARATION_DISTANCE + randomRoomSize()
                 }
             }
             break;
         case "WRoomID":
             coords = {
                 topLeftCorner: {
-                    x: connectingRoom.topLeftCorner.x - ROOM_SEPARATION_DISTANCE - roomWidth,
+                    x: connectingRoom.topLeftCorner.x - ROOM_SEPARATION_DISTANCE - randomRoomSize(),
                     y: connectingRoom.topLeftCorner.y
                 },
                 bottomRightCorner: {
@@ -240,6 +242,10 @@ function removeConnectingRoomFromListIfNoMoreConnections(room) {
     if (!roomHasConnectionAvailable(room)) {
         roomsWithAvailableConnections.splice(roomsWithAvailableConnections.find(r => r.UUID === room.UUID), 1)
     }
+}
+
+function randomRoomSize() {
+    return getRandomNumber(MIN_ROOM_DIMENSION, MAX_ROOM_DIMENSION)
 }
 
 function getRandomItemInList(list) {
