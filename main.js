@@ -41,14 +41,13 @@ function generateRoom() {
         if (roomsWithAvailableConnections.length === 0) throw "There are no rooms with available connections"
         //todo: Randomly connect adjacent rooms.
 
-        const {item: connectingRoom, index: connectingRoomIndex} = getRandomItemInList(roomsWithAvailableConnections)
+        const {item: connectingRoom} = getRandomItemInList(roomsWithAvailableConnections)
         //todo: Allow weighting of choice towards rooms with greater/fewer connections available to give control of sparsity.
         const {item: connectionToUse} = getRandomItemInList(getAvailableConnections(connectingRoom))
 
         roomCoords = setRoomCoords(connectingRoom, connectionToUse)
         const room = createRoomObject(roomCoords, connectingRoom)
-        //todo: Check for room collisions.
-        if(isCollision(room)) return        
+        if (isCollision(room)) return //todo: move above createRoomObject and rework appropriately to use roomCoords.
 
         setConnectionIDs(room, connectingRoom, connectionToUse)
         rooms.push(room)
