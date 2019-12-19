@@ -120,7 +120,7 @@ function drawConnector(TLCorner, BRCorner, connectionToUse) {
     ctx.closePath
 }
 
-function createRoomObject(coords, connectingRoom) {
+function createRoomObject(coords) {
     return {
         UUID: generateUUIDv4(),
         topLeftCorner: {
@@ -237,10 +237,8 @@ function setRoomCoords(connectingRoom, connectionToUse) {
 }
 
 function removeConnectingRoomFromListIfNoMoreConnections(room) {
-    if (rooms.length <= 1) return
-
     if (!roomHasConnectionAvailable(room)) {
-        roomsWithAvailableConnections.splice(roomsWithAvailableConnections.find(r => r === room), 1)
+        roomsWithAvailableConnections.splice(roomsWithAvailableConnections.find(r => r.UUID === room.UUID), 1)
     }
 }
 
